@@ -1,0 +1,53 @@
+URLL https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+SSH Key Setup:
+1) Generate SSH Key
+$ ssh-keygen -t ed25519 -C "jrsmith@ucdavis.edu"
+
+2) Start the SSH client in the background: 
+$eval "$(ssh-agent -s)"
+
+3) Check if configuration file exists:  
+$ open ~/.ssh/config
+> The file /Users/you/.ssh/config does not exist.
+  If the file doesn't exist, create the file.
+$ touch ~/.ssh/config
+
+4)Add lines to config file: 
+$ vi config
+Open your ~/.ssh/config file, then modify the file to contain the following lines. If your SSH key file has a different name or path than the example code, modify the filename or path to match your current setup.
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+
+5) Add your SSH private key to the ssh-agent
+ssh-add -K ~/.ssh/id_ed25519
+
+6) Copy SSH Key to clipboard for the purpose of transferring the key to your Github webpage in the Settings.
+pbcopy < ~/.ssh/id_ed25519.pub
+
+7) Login to GitHub and Add Key to Github 
+Under Name Icon: Settings > SSH and GPG keys > New SSH Key > add name to Title field and paste id_ed25519.pub in the Key field  
+
+8) Test the SSH Key:
+ssh -T git@github.com
+
+Create and copy a Repo
+9) Add New Blank Repo on GitHub webpage
+
+10) Change directory into the local clone of your repository (if you're not already there) and run:
+    create a new directory on local disk for repo
+$ mkdir KeplerFitter
+$ cd KeplerFitter
+$ git clone https://github.com/johnsurf/KeplerFitter KeplerFitter
+
+git remote set-url origin git@github.com:username/your-repository.git
+
+11) copy in files you want to push to the blank GitHub repo: 
+
+git add -A
+git commit -am "Your Git_Mod Message Here"
+git push
+
+12) With the GitHub repo populated -- you can clone it as needed to whereever you want. 
