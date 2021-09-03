@@ -42,10 +42,12 @@ $ mkdir KeplerFitter
 $ cd KeplerFitter
 $ git clone https://github.com/johnsurf/KeplerFitter KeplerFitter
 
-git remote set-url origin git@github.com:username/your-repository.git
-
 11) copy in files you want to push to the blank GitHub repo: 
 
+12) link the current Source directory to your GitHub target repo:  
+git remote set-url origin git@github.com:username/your-repository.git
+
+13) Add/Modify/Commit files and push
 git add -A
 git commit -am "Your Git_Mod Message Here"
 git push
