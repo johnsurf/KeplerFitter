@@ -65,14 +65,16 @@ function [KeplerFit, ChiSq, CovFit, SV7MKSFinal, CovMKSFinal] = NewtonStepUVWith
         options   = odeset('RelTol', 1e-10, 'AbsTol', 1e-13);
         dJdt      = perturbations_odefun(KLagrange,tFit,Y,units);
         % Propagate from fit Reference time tFit back to tBeg
-        [Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tBeg], Y, options);
+        %[Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tBeg], Y, options);
+        [Tout, Yout] = ode45(@(t,y) LagrangePlanetary_odefun(KeplerIteration, t, y, units), [tFit, tBeg], Y, options);
         %Yout(end,:)
         Perturbed = [Tout, Yout];
         Perturbed = sortrows(Perturbed,1);
         Y = Perturbed(end,2:7);
         % Propagate from fit Reference time tFit back to tEnd
         if tFit < tEnd
-            [Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEnd], Y, options);
+            %[Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEnd], Y, options);
+            [Tout, Yout] = ode45(@(t,y) LagrangePlanetary_odefun(KeplerIteration, t, y, units), [tFit, tEnd], Y, options);
             %Yout(end,:)
             Perturbed(end,:) = [];
             Perturbed = [Perturbed; Tout, Yout];

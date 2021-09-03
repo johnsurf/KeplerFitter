@@ -669,30 +669,45 @@
         tStartPlot =  TStartPlot/TU;
         TEndPlot   =   1500.0;
         tEndPlot   =  TEndPlot/TU;
-        timeArray = [(TStartPlot-0.5):(TEndPlot-0.5)]/TU;        
+        tBack      =  [TFit:-1:TStartPlot]/TU;
+        tForward   =  [TFit:TEndPlot]/TU;
+        %timeArray = [(TStartPlot-0.5):(TEndPlot-0.5)]/TU;
+        timeArray = [TStartPlot:TEndPlot]/TU;
+        size(timeArray)
         % Try to Integrate the Equations of Motion for the Classical Elements
         Y             = zeros(6,1);
         options   = odeset('RelTol', 1e-10, 'AbsTol', 1e-13);
-        dJdt      = perturbations_odefun(KLagrange,tFit,Y,units);
+        format long
+        tic
+        dJdt1      = perturbations_odefun(KLagrange,tFit,Y,units)
+        toc
+        tic
+        dJdt2      = LagrangePlanetary_odefun(KeplerFit, tFit, Y, units)
+        toc
+        format short
         Y         = zeros(6,1);
         % Propagate from fit Reference time tFit back to tBeg
-        [Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tStartPlot], Y, options);
+        %[Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tStartPlot], Y, options);
+        [Tout, Yout] = ode45(@(t,y) LagrangePlanetary_odefun(KeplerFit, t, y, units), tBack, Y, options);
         %Yout(end,:)
         Perturbed = [Tout, Yout];
         Perturbed = sortrows(Perturbed,1);
         Y = Perturbed(end,2:7);
         % Propagate from fit Reference time tFit back to tEnd
         if tFit < tEndPlot
-            [Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEndPlot], Y, options);
+            %[Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEndPlot], Y, options);
+            [Tout, Yout] = ode45(@(t,y) LagrangePlanetary_odefun(KeplerFit, t, y, units), tForward, Y, options);
             %Yout(end,:)
             Perturbed(end,:) = [];
             Perturbed = [Perturbed; Tout, Yout];
             Perturbed = sortrows(Perturbed,1);
         end
         KeplerInterpolated = interp1(Perturbed(:,1),Perturbed(:,2:7),timeArray);
-        KeplerInterpolated(1,:) = [];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-        Nbins          = 2000;
+        %KeplerInterpolated(1,:) = [];
+        %Nbins          = 2000;
+        Nbins           = size(KeplerInterpolated,1)
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         % tOffset        = 200/TU;
         % tInterval      = tEnd - tBeg;
         % tRange         = tEnd + 3.0*tOffset - tBeg;
@@ -705,7 +720,8 @@
         CovArrayPos       = [];
         CovArrayVel       = [];
         %Time  = 200.0 - 0.5;
-        Time  = TStartPlot - 0.5;
+        %Time  = TStartPlot - 0.5;
+        Time  = TStartPlot - 1.0;
         for I = 1:Nbins
             Time       = Time + 1.0;
             time       = Time/TU;
@@ -740,7 +756,8 @@
         SizeInitialStateVel = [];
         %TimeArray = [];
         %Time  = 200.0 - 0.5;
-        Time  =  -500 - 0.5;
+        %Time  = TStartPlot - 0.5;
+        Time  = TStartPlot - 1.0;
         for I = 1:Nbins
             Time       = Time + 1.0;
             %TimeArray = [TimeArray, Time];
@@ -859,7 +876,8 @@
         % Y = Perturbed(end,2:7);
         % % Propagate from fit Reference time tFit back to tEnd
         if tFit < tEnd
-            [Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEnd], Y, options);
+            %[Tout, Yout] = ode45(@(t,y) perturbations_odefun(KLagrange, t, y, units), [tFit, tEnd], Y, options);
+            [Tout, Yout] = ode45(@(t,y) LagrangePlanetary_odefun(KeplerFit, t, y, units), [tFit, tEnd], Y, options);
             %Yout(end,:)
             Perturbed(end,:) = [];
             Perturbed = [Perturbed; Tout, Yout];
